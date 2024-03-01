@@ -2,6 +2,13 @@ from circlib import Level
 from svgpathtools import svg2paths2, wsvg, parse_path
 import re
 
+def get_file_name(full_name):
+    dot_index = full_name.rfind('.')
+    if dot_index != -1: 
+        return full_name[:dot_index]
+    else:
+        return full_name
+
 def extract_num(v):
     return ''.join(re.findall(r'\d+', v))
 
@@ -52,8 +59,16 @@ def parse_svg(svg_content='', cpos=(1500,1500)):
     return level
 
 def main():
-    res = parse_svg(input('Path to SVG file: ')) #input('Center position (leave blank for default center): '))
-    print(res.stringify())
+    svgpath = input('Path to SVG file: ')
+    saveasfile = input('Save as TXT file? (y/n) ')
+    res = parse_svg(svgpath) #input('Center position (leave blank for default center): '))
+    restext = res.stringify()
+    if saveasfile == 'y':
+      print('Saving to svg_output.txt')
+      with open('svg_output.txt', 'w') as f:
+         f.write(restext)
+    else:
+      print(restext)
 
 if __name__ == '__main__':
     main()
