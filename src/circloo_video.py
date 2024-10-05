@@ -1,7 +1,8 @@
-from circlib import Level
+from circlib.circlib import Level
 import cv2
 import numpy as np
 from PIL import Image
+from .utils import *
 
 class Display:
     def __init__(self, level, shape):
@@ -130,33 +131,6 @@ def loop_over_frames(vid, res, display):
     capture.release()
     cv2.destroyAllWindows()
 
-def list_safe_get(array, index):
-    try:
-        return array[index]
-    except IndexError:
-        return None
-    except KeyError:
-        return None
-
-def get_cli_args(inputs):
-    res = []
-    for input_data in inputs:
-        prompt = input_data.get('prompt')
-        if prompt:
-            default = input_data.get('default')
-            input_res = input(prompt)
-            if default and not input_res:
-                res.append(default)
-            elif not default and not input_res:
-                raise Exception('This argument is required!')
-            elif input_res:
-                res.append(input_res)
-    return res
-
-def string_to_tuple(str):
-    parts = str.split(',')
-    return (parts[0].strip(), parts[1].strip())
-
 def main():
     video_file_path, resolution, save_as_file = get_cli_args([
         { 'prompt': 'Video file path: ' },
@@ -173,12 +147,7 @@ def main():
     loop_over_frames(video_file_path, resolution, display)
     level_text = level.stringify()
 
-    if save_as_file == 'y':
-      print('Saving to video_output.txt')
-      with open('video_output.txt', 'w') as f:
-         f.write(level_text)
-    else:
-      print(level_text)
+    level_output(level_text, save_as_file)
 
 def test():
     #img = Image.open('ironc.jpg')
@@ -188,10 +157,10 @@ def test():
     #print(res)
     #print(np.array(Image.open('giron.bmp')))
     #print(center_point((0, 0), (20, 5)))
-    lvl = Level()
-    lvl.headers['gravity'] = [0.1, 270]
+    #lvl = Level()
+    #lvl.headers['gravity'] = [0.1, 270]
     #d = Display(lvl, (5, 7))
-    print(lvl.stringify())
+    #print(lvl.stringify())
 
 if __name__ == '__main__':
     main()

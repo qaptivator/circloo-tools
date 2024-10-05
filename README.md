@@ -1,16 +1,28 @@
 # circloo-tools
 
-Experimental tools for CircloO.
+Experimental tools for CircloO. Works with CircloO level files. Be sure to backup your levels, **I am not responsible for any data loss or corruption.**
+
+- To use the tools, first install the dependencies (for every tool), like so: `pip install -r requirements.txt`
+- Also install `circlib` like so: `git submodule update --init --recursive`
+- Run the tools from the top directory, or in other words the repository
 
 ## svg_to_level
 
 Parse and insert a SVG file into CircoO level. Does not support quadratic Bezier curves.
 
-Usage: `python -u svg_to_level.py`
-And then it will ask for the path to the SVG file, preferably in the same directory as `svg_to_level.py`
+Usage: `python -u -m src.svg_to_level`
+It will ask for the path to the SVG file (preferably it should be in the same directory as the script).
 
 ## circloo_video
 
 Generate and play a video through CircloO level.
 
-Usage: `python -u circloo_video.py`
+Usage: `python -u -m src.circloo_video`
+It will ask for the path to the video file (preferably it should be in the same directory as the script), and the resolution for pixel display (in-game).
+
+## beatmap_gen
+
+Generate a beeatmap from a song, and a level (similar to rythm games) from the beatmap.
+
+Usage: `python -u -m src.beatmap_gen`
+It will ask for the path to the audio file (preferably it should be in the same directory as the script).

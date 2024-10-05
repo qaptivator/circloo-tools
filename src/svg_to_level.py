@@ -1,25 +1,15 @@
-from circlib import Level
+from circlib.circlib import Level
 from svgpathtools import svg2paths2, wsvg, parse_path
-import re
-
-def get_file_name(full_name):
-    dot_index = full_name.rfind('.')
-    if dot_index != -1: 
-        return full_name[:dot_index]
-    else:
-        return full_name
-
-def extract_num(v):
-    return ''.join(re.findall(r'\d+', v))
+from .utils import *
 
 def parse_svg(svg_content='', cpos=(1500,1500)):
     paths, attrs, svg_attrs = svg2paths2(svg_content)
     svg_w, svg_h = svg_attrs['width'], svg_attrs['height']
     pos_w, pos_h = cpos
     def offset_x(x):
-      return pos_w - float(extract_num(svg_w)) + x
+      return pos_w - float(num_from_str(svg_w)) + x
     def offset_y(y):
-      return pos_h - float(extract_num(svg_h)) + y
+      return pos_h - float(num_from_str(svg_h)) + y
     def offset_pos(pos):
       return [offset_x(pos.real), offset_y(pos.imag)]
 
@@ -59,16 +49,15 @@ def parse_svg(svg_content='', cpos=(1500,1500)):
     return level
 
 def main():
-    svgpath = input('Path to SVG file: ')
-    saveasfile = input('Save as TXT file? (y/n) ')
-    res = parse_svg(svgpath) #input('Center position (leave blank for default center): '))
-    restext = res.stringify()
-    if saveasfile == 'y':
-      print('Saving to svg_output.txt')
-      with open('svg_output.txt', 'w') as f:
-         f.write(restext)
-    else:
-      print(restext)
+    svg_file_path, save_as_file = get_cli_args([
+        { 'prompt': 'SVG file path: ' },
+        { 'prompt': 'Save as TXT file? (y/n) ', 'default': 'n' }
+    ])
+    
+    level = parse_svg(svg_file_path) #input('Center position (leave blank for default center): '))
+    level_text = level.stringify()
+
+    level_output(level_text, save_as_file)
 
 if __name__ == '__main__':
     main()

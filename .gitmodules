@@ -1,0 +1,3 @@
+[submodule "circlib"]
+	path = circlib
+	url = https://github.com/qaptivator/circlib
