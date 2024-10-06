@@ -9,33 +9,39 @@ class TriggerArray:
         self.midi_data = midi_data
 
         # array of all supported sounds, basically mapping MIDI notes to real triggers
-        self.sounds = [
-            {
-                'midi': '5c',
-                't_variation': 'piano20',
-                't_pitch': 1,
-                't_volume': 1,
-            }
-        ]
+        self.sounds = PIANO_NOTES
         # when to wrap the triggers around
         self.sounds_per_row = 10
 
         self.notes = []
 
-    def extract_notes(self):
-        for instrument in self.midi_data.instruments:
-            # TODO: prompt the user to select an instrument
-            for note in instrument.notes:
-                pass
-
-
     def generate_array(self):
         pass
 
-    def add_sounds_from_midi(self):
-        pass
+    def extract_notes(self):
+        #for instrument in self.midi_data.instruments:
+            # TODO: prompt the user to select an instrument
+        #    for note in instrument.notes:
+        #        pass
+        instrument = self.midi_data.instruments[0]
+        for note in instrument.notes:
+            note_name = pretty_midi.note_number_to_name(note.pitch).upper()
+            if note_name:
+                piano_note = list_safe_get(self.sounds, note_name)
+                if piano_note and piano_note.t_variation and note.start:
+                    self.notes.append({
+                        'variation': piano_note.t_variation,
+                        'time': note.start,
+                        'pitch': piano_note.t_pitch or 1,
+                        'volume': piano_note.volume or 1,
+                    })
 
-    def add_sound(self, delay, note):
+    def add_sounds_from_midi(self):
+        for note in self.notes:
+            if note.variation and note.time:
+                self.add_sound(note.time, note.variation, note.pitch, note.volume)
+
+    def add_sound(self, delay, variation, pitch=1, volume=1):
         # Adds a generator (note) with specified delay and sound (paino key)
         pass
 
@@ -59,8 +65,10 @@ def main():
         print("Could not read MIDI file")
         return
 
+    # this is a really bad way of doing this but ok
     trigger_array = TriggerArray(level_text, midi_data)
     trigger_array.generate_array()
+    trigger_array.extract_notes()
     trigger_array.add_sounds_from_midi()
     level_text = trigger_array.get_level()
 
