@@ -10,7 +10,7 @@ class TriggerArray:
         self.midi_data = midi_data
         self.last_index = 0
         self.end_time = midi_data.get_end_time()
-        self.speed_factor = 1.2
+        self.speed_factor = 1
 
         # array of all supported sounds, basically mapping MIDI notes to real triggers
         self.sounds = PIANO_NOTES
@@ -78,6 +78,7 @@ sfx \'{sound['t_variation']}\' {sound['t_volume']} {sound['t_pitch']} -1
         if pos:
             self.level_text += f'''
 tmc {pos[0]} {pos[1]} {radius} 0 {dissapear_after * 60} {self.end_time * 60} {-(self.end_time - delay) * 60}
+noanim
 < {self.last_index}
 '''
             self.last_index += 1

@@ -53,7 +53,7 @@ def find(arr, key, target):
 LEVEL_PREFIX = '''/
 / circloO level
 / Made with circloO Level Editor
-totalCircles 7 0
+totalCircles 7 1
 / EDITOR_TOOL 1 select
 / EDITOR_VIEW 1500 1500 1
 / EDT 111791

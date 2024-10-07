@@ -36,4 +36,4 @@ Generates music in a level by giving it a midi file. It generates an array of tr
 Usage: `python -u -m src.midi_to_level`
 It will ask for the midi file input (.mid)
 
-Credits to thisaccountdoesnotexist for example Megalovania no bass midi from Online Sequencer
+Credits to [thisaccountdoesnotexist](https://onlinesequencer.net/members/48437) for example Megalovania no bass midi from [Online Sequencer](https://onlinesequencer.net/1760062)
