@@ -44,19 +44,20 @@ sfx \'{sound['t_variation']}\' {sound['t_volume']} {sound['t_pitch']} -1
             # TODO: prompt the user to select an instrument
         #    for note in instrument.notes:
         #        pass
-        instrument = self.midi_data.instruments[0]
-        for note in instrument.notes:
-            note_name = pretty_midi.note_number_to_name(note.pitch).upper()
-            if note_name:
-                #piano_note = list_safe_get(self.sounds, note_name)
-                piano_note = find(self.sounds, 'midi', note_name)
-                if piano_note and piano_note['t_variation'] and note.start:
-                    self.notes.append({
-                        'variation': piano_note['t_variation'],
-                        'time': note.start,
-                        'pitch': piano_note['t_pitch'] or 1,
-                        'volume': piano_note['t_volume'] or 1,
-                    })
+        #instrument = self.midi_data.instruments[0]
+        for instrument in self.midi_data.instruments:
+            for note in instrument.notes:
+                note_name = pretty_midi.note_number_to_name(note.pitch).upper()
+                if note_name:
+                    #piano_note = list_safe_get(self.sounds, note_name)
+                    piano_note = find(self.sounds, 'midi', note_name)
+                    if piano_note and piano_note['t_variation'] and note.start:
+                        self.notes.append({
+                            'variation': piano_note['t_variation'],
+                            'time': note.start,
+                            'pitch': piano_note['t_pitch'] or 1,
+                            'volume': piano_note['t_volume'] or 1,
+                        })
 
     def add_sounds_from_midi(self):
         for note in self.notes:
