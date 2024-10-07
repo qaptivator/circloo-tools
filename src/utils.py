@@ -45,6 +45,24 @@ def level_output(level_text, save_as_file, file_name='script_output.txt'):
     else:
       print(level_text)
 
+def find(arr, key, target):
+    for x in arr:
+        if x[key] == target:
+            return x
+
+LEVEL_PREFIX = '''/
+/ circloO level
+/ Made with circloO Level Editor
+totalCircles 7 0
+/ EDITOR_TOOL 1 select
+/ EDITOR_VIEW 1500 1500 1
+/ EDT 111791
+/ _SAVE_TIME_1728293280000_END
+levelscriptVersion 8
+COLORS 246
+grav 1 270
+'''
+
 PIANO_NOTES = [
     {"midi": "C2", "t_variation": "piano0", "t_pitch": 1, "t_volume": 1},
     {"midi": "C#2", "t_variation": "piano1", "t_pitch": 1, "t_volume": 1},
