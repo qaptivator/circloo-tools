@@ -1,4 +1,18 @@
 import re
+import argparse
+
+def create_argparse(*args, **kwargs):
+    parser = argparse.ArgumentParser(*args, **kwargs)
+    parser.add_argument('-f', '--file', action='store', default='script_output.txt')
+    return parser
+
+def save_level(level_text, args):
+    if args.file:
+      print(f'Saving to {args.file}')
+      with open(args.file, 'w') as f:
+         f.write(level_text)
+    else:
+      print(level_text)
 
 def get_cli_args(inputs):
     res = []
