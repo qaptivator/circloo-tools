@@ -36,19 +36,28 @@ class TriggerArray:
                 self.add_sound(note['time'], note['variation'])
 
     def generate_array(self):
-        for index, sound in enumerate(self.key_map):
-            # if a note doesnt exist and it is compact mode, dont generate it
-            if find(self.notes, 'variation', sound['t_variation']) or not self.compact:
+        compacted_key_map = self.key_map
+
+        if self.compact:
+            compacted_key_map = []
+            for key in self.key_map:
+                if find(self.notes, 'variation', key['t_variation']):
+                    compacted_key_map.append(key)
+                    
+        for index, key in enumerate(compacted_key_map):
+            # if a note doesnt exist and it is compact mode, dont generate it. this code isnt needed but ok, i will remove it later
+            if find(self.notes, 'variation', key['t_variation']) or not self.compact:
                 column = index % self.keys_per_row
                 row = math.floor(index / self.keys_per_row)
                 pos = (column * self.trigger_padding[0] + self.trigger_offset[0], row * self.trigger_padding[1] + self.trigger_offset[1])
-                self.key_pos[sound['t_variation']] = pos
+                self.key_pos[key['t_variation']] = pos
 
                 # regular collectable: ic 'io' {pos[0]} {pos[1]} 1 
                 # gravity collectable (nothing on the inside): ic 'im' {pos[0]} {pos[1]} 1  90 0
-                self.level += f'''ic 'im' {pos[0]} {pos[1]} 1  90 0
+                self.level += f'''
+ic 'im' {pos[0]} {pos[1]} 1  90 0
 trigger
-sfx \'{sound['t_variation']}\' {sound['t_volume']} {sound['t_pitch']} -1
+sfx \'{key['t_variation']}\' {key['t_volume']} {key['t_pitch']} -1
 < {self.last_index}
     '''
                 self.last_index += 1
@@ -59,7 +68,7 @@ sfx \'{sound['t_variation']}\' {sound['t_volume']} {sound['t_pitch']} -1
         #    for note in instrument.notes:
         #        pass
         #instrument = self.midi_data.instruments[0]
-        for instrument in self.midi_data.instruments:
+        for instrument in self.midi.instruments:
             for note in instrument.notes:
                 note_name = pretty_midi.note_number_to_name(note.pitch).upper()
                 if note_name:
@@ -81,7 +90,7 @@ sfx \'{sound['t_variation']}\' {sound['t_volume']} {sound['t_pitch']} -1
         radius = 15
         dissapear_after = 0.05
 
-        pos = self.key_pos[variation]
+        pos = list_safe_get(self.key_pos, variation)
         if pos:
             self.level += f'''
 tmc {pos[0]} {pos[1]} {radius} 0 {dissapear_after * 60} {self.end_time * 60} {-(self.end_time - delay) * 60}
@@ -117,7 +126,7 @@ def main():
     trigger_array = TriggerArray(level, midi, args.compact, args.speed)
     level_text = trigger_array.get_level()
 
-    level_output(level_text, args)
+    save_level(level_text, args)
 
 if __name__ == '__main__':
     main()

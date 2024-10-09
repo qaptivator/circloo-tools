@@ -6,13 +6,14 @@ def create_argparse(**kwargs):
     parser.add_argument('-f', '--file', nargs='?', const='script_output.txt', help='File path to store script output.')
     return parser
 
-def save_level(level_text, args):
+def save_level(text, args):
     if args.file:
       print(f'Saving to {args.file}')
       with open(args.file, 'w') as f:
-         f.write(level_text)
+         f.write(text)
     else:
-      print(level_text)
+      print('No script output path provided, printing to console')
+      print(text)
 
 def get_cli_args(inputs):
     res = []
