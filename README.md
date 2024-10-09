@@ -31,7 +31,7 @@ It will ask for the path to the audio file (preferably it should be in the same 
 
 ## midi_to_level
 
-Generates music in a level by giving it a midi file. It generates an array of triggers producing sounds, and then the corresponding generators with their delays specified in midi. You can aslo change the speed (tempo) in the code.
+Generates music in a level by converting notes from a MIDI file into generators and triggers. It generates an array of triggers producing sounds, and then the corresponding generators with their delays specified in midi. You can aslo change the speed (tempo) in the code.
 
 Usage: `python -u -m src.midi_to_level`
 It will ask for the midi file input (.mid)
