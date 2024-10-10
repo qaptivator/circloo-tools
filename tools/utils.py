@@ -1,6 +1,8 @@
 import re
 import argparse
 
+# global utility functions for all tools to use
+
 def create_argparse(**kwargs):
     parser = argparse.ArgumentParser(**kwargs)
     parser.add_argument('-f', '--file', nargs='?', const='script_output.txt', help='File path to store script output.')

@@ -1,4 +1,4 @@
-from .utils import *
+from ..utils import *
 import pretty_midi
 import math
 import os

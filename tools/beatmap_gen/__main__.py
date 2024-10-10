@@ -2,7 +2,7 @@ from circlib.circlib import Level
 import numpy as np
 import librosa
 import math
-from .utils import *
+from ..utils import *
 
 def extract_features(audio_file_path: str):
     y, sr = librosa.load(audio_file_path)

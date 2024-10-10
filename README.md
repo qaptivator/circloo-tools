@@ -1,44 +1,34 @@
 # circloo-tools
 
-# !!! CIRCLIB IS CURRENTLY BROKEN. YOUR LEVEL FILE MAY GET CORRUPTED. !!
+# !!! CIRCLIB IS CURRENTLY BROKEN. MOST TOOLS WILL NOT WORK !!
 
 Experimental tools for CircloO. Works with CircloO level files. Be sure to backup your levels, **I am not responsible for any data loss or corruption.**
 
-- To use the tools, first install the dependencies (for every tool), like so: `pip install -r requirements.txt`
-- Also install `circlib` like so: `git submodule update --init --recursive`
-- Run the tools from the top directory, or in other words the repository
+To start using the tools:
 
-## svg_to_level
+1. Install dependencies: `pip install -r requirements.txt`
+2. Install circlib: `git submodule update --init --recursive`
 
-Parse and insert a SVG file into CircoO level. Does not support quadratic Bezier curves.
+Each tool is separated into its own package, and they have their own markdown files documenting the usage.
 
-Usage: `python -u -m src.svg_to_level`
-It will ask for the path to the SVG file (preferably it should be in the same directory as the script).
+# Tools
 
-## circloo_video
+🟩 -- fully tested and ready to use<br>
+🟨 -- theoretically works but needs testing and fixes<br>
+🟥 -- certainly doesnt work, needs rewriting or in its early stages<br>
+🟦 -- concept, idea, development has not even started<br>
 
-Generate and play a video through CircloO level.
+| Name          | Description                                                                              | Status |
+| ------------- | ---------------------------------------------------------------------------------------- | ------ |
+| beatmap_gen   | Generate a beatmap from a song, and a level (similar to rythm games) from the beatmap.   | 🟥     |
+| circloo_video | Generate and play a video through a CircloO level.                                       | 🟨     |
+| midi_to_level | Play music in a level by converting notes from a MIDI file into generators and triggers. | 🟩     |
+| svg_to_level  | Parse and insert a SVG image into CircoO level.                                          | 🟨     |
 
-Usage: `python -u -m src.circloo_video`
-It will ask for the path to the video file (preferably it should be in the same directory as the script), and the resolution for pixel display (in-game).
+# TODO
 
-## beatmap_gen
-
-Generate a beeatmap from a song, and a level (similar to rythm games) from the beatmap.
-
-Usage: `python -u -m src.beatmap_gen`
-It will ask for the path to the audio file (preferably it should be in the same directory as the script).
-
-## midi_to_level
-
-Generates music in a level by converting notes from a MIDI file into generators and triggers. It generates an array of triggers producing sounds, and then the corresponding generators with their delays specified in midi. View the help menu in the CLI.
-
-TODO:
-
-- document cli arguments
-- add customizable layouts (eg straight, square, compact), which will ucstomize the arrangement and padding of triggers
-
-Usage: `python -u -m src.midi_to_level`
-It will ask for the midi file input (.mid)
-
-Credits to [thisaccountdoesnotexist](https://onlinesequencer.net/members/48437) for example Megalovania no bass midi from [Online Sequencer](https://onlinesequencer.net/1760062)
+- [ ] fix circlib
+- [x] separate tools into their own packages
+- [ ] rewrite documentation
+- [ ] clean up `utils.py`
+- [ ] rewrite all tools to use `argparse`

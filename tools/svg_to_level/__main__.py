@@ -1,6 +1,6 @@
 from circlib.circlib import Level
 from svgpathtools import svg2paths2, wsvg, parse_path
-from .utils import *
+from ..utils import *
 
 def parse_svg(svg_content='', cpos=(1500,1500)):
     paths, attrs, svg_attrs = svg2paths2(svg_content)

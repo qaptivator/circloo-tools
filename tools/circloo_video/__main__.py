@@ -2,7 +2,7 @@ from circlib.circlib import Level
 import cv2
 import numpy as np
 from PIL import Image
-from .utils import *
+from ..utils import *
 
 class Display:
     def __init__(self, level, shape):
@@ -148,19 +148,6 @@ def main():
     level_text = level.stringify()
 
     level_output(level_text, save_as_file)
-
-def test():
-    #img = Image.open('ironc.jpg')
-    #ar = np.array(img)
-    #img.save('giron.bmp', "BMP")
-    #res = image_to_bitmap(ar)
-    #print(res)
-    #print(np.array(Image.open('giron.bmp')))
-    #print(center_point((0, 0), (20, 5)))
-    #lvl = Level()
-    #lvl.headers['gravity'] = [0.1, 270]
-    #d = Display(lvl, (5, 7))
-    #print(lvl.stringify())
 
 if __name__ == '__main__':
     main()
