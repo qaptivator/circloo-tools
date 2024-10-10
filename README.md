@@ -1,6 +1,6 @@
 # circloo-tools
 
-# !!! CIRCLIB IS CURRENTLY BROKEN. MOST TOOLS WILL NOT WORK !!
+# !!! CIRCLIB IS CURRENTLY BROKEN. MOST TOOLS WILL NOT WORK !!!
 
 Experimental tools for CircloO. Works with CircloO level files. Be sure to backup your levels, **I am not responsible for any data loss or corruption.**
 
