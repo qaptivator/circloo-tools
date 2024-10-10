@@ -78,6 +78,8 @@ COLORS 246
 grav 1 270
 '''
 
+# TODO: correspond intruments to the general midi instrument program code
+
 PIANO_NOTES = [
     {"midi_key": "C2", "t_variation": "piano0", "t_pitch": 1, "t_volume": 1},
     {"midi_key": "C#2", "t_variation": "piano1", "t_pitch": 1, "t_volume": 1},
