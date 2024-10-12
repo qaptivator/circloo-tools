@@ -2,6 +2,91 @@ from ..utils import *
 import pretty_midi
 import math
 import os
+from dataclasses import dataclass
+
+INSTRUMENT_CLASSES = [
+
+]
+
+@dataclass
+class Trigger:
+    instrument_class: str
+    note_pitch: int
+
+'''
+trigger
+
+instrument_class: instrument class which this trigger corresponds to
+note_pitch: the note's pitch (piano key, drum thing etc)
+->
+trigger_variant: variant of the created trigger (the type of instrument is stored inside the variant)
+trigger_pitch: pitch of the created trigger
+trigger_volume: volume of the created trigger'''
+
+PIANO_NOTES = [
+    {"midi_key": "C2", "t_variation": "piano0", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "C#2", "t_variation": "piano1", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "D2", "t_variation": "piano2", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "D#2", "t_variation": "piano3", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "E2", "t_variation": "piano4", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "F2", "t_variation": "piano5", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "F#2", "t_variation": "piano6", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "G2", "t_variation": "piano7", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "G#2", "t_variation": "piano8", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "A2", "t_variation": "piano9", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "A#2", "t_variation": "piano10", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "B2", "t_variation": "piano11", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "C3", "t_variation": "piano12", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "C#3", "t_variation": "piano13", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "D3", "t_variation": "piano14", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "D#3", "t_variation": "piano15", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "E3", "t_variation": "piano16", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "F3", "t_variation": "piano17", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "F#3", "t_variation": "piano18", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "G3", "t_variation": "piano19", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "G#3", "t_variation": "piano20", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "A3", "t_variation": "piano21", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "A#3", "t_variation": "piano22", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "B3", "t_variation": "piano23", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "C4", "t_variation": "piano24", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "C#4", "t_variation": "piano25", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "D4", "t_variation": "piano26", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "D#4", "t_variation": "piano27", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "E4", "t_variation": "piano28", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "F4", "t_variation": "piano29", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "F#4", "t_variation": "piano30", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "G4", "t_variation": "piano31", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "G#4", "t_variation": "piano32", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "A4", "t_variation": "piano33", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "A#4", "t_variation": "piano34", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "B4", "t_variation": "piano35", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "C5", "t_variation": "piano36", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "C#5", "t_variation": "piano37", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "D5", "t_variation": "piano38", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "D#5", "t_variation": "piano39", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "E5", "t_variation": "piano40", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "F5", "t_variation": "piano41", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "F#5", "t_variation": "piano42", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "G5", "t_variation": "piano43", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "G#5", "t_variation": "piano44", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "A5", "t_variation": "piano45", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "A#5", "t_variation": "piano46", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "B5", "t_variation": "piano47", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "C6", "t_variation": "piano48", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "C#6", "t_variation": "piano49", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "D6", "t_variation": "piano50", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "D#6", "t_variation": "piano51", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "E6", "t_variation": "piano52", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "F6", "t_variation": "piano53", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "F#6", "t_variation": "piano54", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "G6", "t_variation": "piano55", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "G#6", "t_variation": "piano56", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "A6", "t_variation": "piano57", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "A#6", "t_variation": "piano58", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "B6", "t_variation": "piano59", "t_pitch": 1, "t_volume": 1},
+    {"midi_key": "C7", "t_variation": "piano60", "t_pitch": 1, "t_volume": 1},
+]
+
 
 class TriggerArray:
     def __init__(self, level, midi, compact=False, speed_factor=1):
@@ -14,11 +99,11 @@ class TriggerArray:
 
         # keys are the sounds that can be played (eg C#3), notes are the individual sounds that have their delay
         # array of all supported sounds, basically mapping MIDI notes to real triggers
-        self.key_map = PIANO_NOTES
+        self.trigger_map = PIANO_NOTES
         # when to wrap the triggers around
-        self.keys_per_row = 10
+        self.triggers_per_row = 10
         # positions of all notes
-        self.key_pos = {}
+        self.trigger_pos = {}
 
         # padding between triggers
         self.trigger_padding = (100, 100)
@@ -36,21 +121,21 @@ class TriggerArray:
                 self.add_sound(note['time'], note['variation'])
 
     def generate_array(self):
-        compacted_key_map = self.key_map
+        new_trigger_map = self.trigger_map
 
         if self.compact:
-            compacted_key_map = []
-            for key in self.key_map:
-                if find(self.notes, 'variation', key['t_variation']):
-                    compacted_key_map.append(key)
+            new_trigger_map = []
+            for key in self.trigger_map:
+                if list_find(self.notes, 'variation', key['t_variation']):
+                    new_trigger_map.append(key)
                     
-        for index, key in enumerate(compacted_key_map):
+        for index, key in enumerate(new_trigger_map):
             # if a note doesnt exist and it is compact mode, dont generate it. this code isnt needed but ok, i will remove it later
-            if find(self.notes, 'variation', key['t_variation']) or not self.compact:
-                column = index % self.keys_per_row
-                row = math.floor(index / self.keys_per_row)
+            if list_find(self.notes, 'variation', key['t_variation']) or not self.compact:
+                column = index % self.triggers_per_row
+                row = math.floor(index / self.triggers_per_row)
                 pos = (column * self.trigger_padding[0] + self.trigger_offset[0], row * self.trigger_padding[1] + self.trigger_offset[1])
-                self.key_pos[key['t_variation']] = pos
+                self.trigger_pos[key['t_variation']] = pos
 
                 # regular collectable: ic 'io' {pos[0]} {pos[1]} 1 
                 # gravity collectable (nothing on the inside): ic 'im' {pos[0]} {pos[1]} 1  90 0
@@ -73,7 +158,7 @@ sfx \'{key['t_variation']}\' {key['t_volume']} {key['t_pitch']} -1
                 note_name = pretty_midi.note_number_to_name(note.pitch).upper()
                 if note_name:
                     #piano_note = list_safe_get(self.sounds, note_name)
-                    piano_note = find(self.key_map, 'midi_key', note_name)
+                    piano_note = list_find(self.trigger_map, 'midi_key', note_name)
                     if piano_note and piano_note['t_variation'] and note.start:
                         self.notes.append({
                             'variation': piano_note['t_variation'],
@@ -90,7 +175,7 @@ sfx \'{key['t_variation']}\' {key['t_volume']} {key['t_pitch']} -1
         radius = 15
         dissapear_after = 0.05
 
-        pos = list_safe_get(self.key_pos, variation)
+        pos = list_safe_get(self.trigger_pos, variation)
         if pos:
             self.level += f'''
 tmc {pos[0]} {pos[1]} {radius} 0 {dissapear_after * 60} {self.end_time * 60} {-(self.end_time - delay) * 60}
