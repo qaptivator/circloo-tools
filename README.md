@@ -9,7 +9,8 @@ To start using the tools:
 1. Install dependencies: `pip install -r requirements.txt`
 2. Install circlib: `git submodule update --init --recursive`
 
-Each tool is separated into its own package, and they have their own markdown files documenting the usage.
+Each tool is separated into its own package, and they have their own markdown files documenting the usage.<br>
+To run a tool, go to `circloo-tools/` and run this command (replace `<TOOL>` with the tool name you wanna use): `python -m tools.<TOOL>`
 
 # Tools
 
