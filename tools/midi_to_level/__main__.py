@@ -1,10 +1,11 @@
-from ..utils import *
+from tools.utils import *
 import pretty_midi
 import math
 import os
 from dataclasses import dataclass
 
 # GENERAL MIDI: https://www.ccarh.org/courses/253/handout/gminstruments/
+# how to run: python -m tools.midi_to_level --help
 
 @dataclass
 class Trigger:
@@ -15,10 +16,10 @@ class Trigger:
 
 @dataclass
 class Instrument:
-    instrument_name: str | list[str] # matches the exact instrument name, or an array of names. see INSTRUMENT_MAP in pretty_midi
-    instrument_class: str | list[str] # matches the exact instrument class, or an array of classes. see INSTRUMENT_CLASSES in pretty_midi
-    is_drum: bool = False # is this instrument a drum?
     triggers: list[Trigger] # list of actual trigger mappings
+    instrument_name: str | list[str] = '' # matches the exact instrument name, or an array of names. see INSTRUMENT_MAP in pretty_midi
+    instrument_class: str | list[str] = '' # matches the exact instrument class, or an array of classes. see INSTRUMENT_CLASSES in pretty_midi
+    is_drum: bool = False # is this instrument a drum?
 
 def sanitize_trigger_map(v: list[Instrument]):
     for instr in v:
@@ -55,29 +56,11 @@ def sanitize_trigger_map(v: list[Instrument]):
 
             trigger.midi_number = midi_number
 
-'''
-you will write midi mappings with human friendly format, and then it will get converted to format, which is easier to use in code
-
-trigger_map: array[
-    {
-        instrument_name: str | array[str]
-        instrument_class: str | array[str]
-        is_drum: bool? = False
-        triggers: array[
-            {
-                midi_number: str - matches the pitch of a note. will match for piano keys, drums and numbers
-                trigger_variant: str - the sfx variant
-                trigger_pitch: int? = 1
-                trigger_volume: int? = 1
-            }
-        ]
-    }
-]
-'''
-
-KEY_MAPPINGS = {
+TRIGGER_MAPS = {
     'generic': sanitize_trigger_map([
-        Instrument('', 'Piano')
+        Instrument(instrument_class='Piano', triggers=[
+            Trigger(midi_number='C2', trigger_variant='piano0'),
+        ])
     ])
 }
 
@@ -147,7 +130,7 @@ PIANO_NOTES = [
 
 
 class TriggerArray:
-    def __init__(self, level, midi, compact=False, speed_factor=1):
+    def __init__(self, level, midi, trigger_map, compact=False, speed_factor=1):
         self.level = level
         self.midi = midi
         self.last_index = 0
@@ -157,7 +140,7 @@ class TriggerArray:
 
         # keys are the sounds that can be played (eg C#3), notes are the individual sounds that have their delay
         # array of all supported sounds, basically mapping MIDI notes to real triggers
-        self.trigger_map = PIANO_NOTES
+        self.trigger_map = trigger_map
         # when to wrap the triggers around
         self.triggers_per_row = 10
         # positions of all notes
@@ -251,22 +234,29 @@ def main():
     parser = create_argparse(prog='midi_to_level', description='Generates music in a level by converting notes from a MIDI file into generators and triggers.')
     parser.add_argument('midi', action='store', help='Path to MIDI file (.mid)')
     parser.add_argument('-c', '--compact', action='store_true', help='Removes triggers for notes, which arent used in the MIDI. By default, the tool creates an array of triggers for all of the available notes.')
-    parser.add_argument('-s', '--speed', action='store', type=float, default=1, help='Speed factor which is applied to the MIDI.')
+    parser.add_argument('-s', '--speed', action='store', type=float, default=1, help='Speed factor which is applied to the MIDI. Defaults to 1.')
+    parser.add_argument('-m', '--mapping', action='store', type=str, default='generic', help=f'Selects the trigger mapping, which is used to map MIDI notes to level triggers. Defaults to \'generic\'. Available mappings: {", ".join(TRIGGER_MAPS.keys())}.')
+    parser.add_argument('-l', '--layout', action='store', type=str, default='', help='Layout in which triggers will be created. In a straight line, in a box, compact etc. WORK IN PROGRESS.')
     args = parser.parse_args()
 
     level = ''
     level += LEVEL_PREFIX
 
     if not os.path.exists(args.midi):
-        print("MIDI file does not exist by the provided path")
+        print('MIDI file does not exist by the provided path')
         return
     
     midi = pretty_midi.PrettyMIDI(args.midi)
     if not midi:
-        print("Could not read MIDI file, an error occured")
+        print('Could not read MIDI file, an error occured')
+        return
+    
+    trigger_map = TRIGGER_MAPS.get(args.mapping)
+    if not trigger_map:
+        print(f'Trigger mapping \'{args.mapping}\' doesnt exist')
         return
 
-    trigger_array = TriggerArray(level, midi, args.compact, args.speed)
+    trigger_array = TriggerArray(level, midi, trigger_map, args.compact, args.speed)
     level_text = trigger_array.get_level()
 
     save_level(level_text, args)
