@@ -4,24 +4,82 @@ import math
 import os
 from dataclasses import dataclass
 
-INSTRUMENT_CLASSES = [
-
-]
+# GENERAL MIDI: https://www.ccarh.org/courses/253/handout/gminstruments/
 
 @dataclass
 class Trigger:
-    instrument_class: str
-    note_pitch: int
+    midi_number: str # the midi note number, aka the pitch. it can be a number, piano key or drum
+    trigger_variant: str # the variant used in the trigger (it should be like it's saed in the level file, not like in game)
+    trigger_pitch: int = 1 # the pitch in the trigger
+    trigger_volume: int = 1 # the volume in the trigger
+
+@dataclass
+class Instrument:
+    instrument_name: str | list[str] # matches the exact instrument name, or an array of names. see INSTRUMENT_MAP in pretty_midi
+    instrument_class: str | list[str] # matches the exact instrument class, or an array of classes. see INSTRUMENT_CLASSES in pretty_midi
+    is_drum: bool = False # is this instrument a drum?
+    triggers: list[Trigger] # list of actual trigger mappings
+
+def sanitize_trigger_map(v: list[Instrument]):
+    for instr in v:
+        if type(instr.instrument_name) != list:
+            instr.instrument_name = [instr.instrument_name]
+        if type(instr.instrument_class) != list:
+            instr.instrument_class = [instr.instrument_class]
+        for trigger in instr.triggers:
+            stop_exec = False
+            midi_number = trigger.midi_number
+
+            try:
+                midi_number = int(midi_number)
+            except:
+                pass
+            else:
+                stop_exec = True
+
+            if not stop_exec:
+                try:
+                    midi_number = pretty_midi.note_name_to_number(midi_number)
+                except:
+                    pass
+                else:
+                    stop_exec = True
+
+            if not stop_exec:
+                try:
+                    midi_number = pretty_midi.drum_name_to_note_number(midi_number)
+                except:
+                    pass
+                else:
+                    stop_exec = True
+
+            trigger.midi_number = midi_number
 
 '''
-trigger
+you will write midi mappings with human friendly format, and then it will get converted to format, which is easier to use in code
 
-instrument_class: instrument class which this trigger corresponds to
-note_pitch: the note's pitch (piano key, drum thing etc)
-->
-trigger_variant: variant of the created trigger (the type of instrument is stored inside the variant)
-trigger_pitch: pitch of the created trigger
-trigger_volume: volume of the created trigger'''
+trigger_map: array[
+    {
+        instrument_name: str | array[str]
+        instrument_class: str | array[str]
+        is_drum: bool? = False
+        triggers: array[
+            {
+                midi_number: str - matches the pitch of a note. will match for piano keys, drums and numbers
+                trigger_variant: str - the sfx variant
+                trigger_pitch: int? = 1
+                trigger_volume: int? = 1
+            }
+        ]
+    }
+]
+'''
+
+KEY_MAPPINGS = {
+    'generic': sanitize_trigger_map([
+        Instrument('', 'Piano')
+    ])
+}
 
 PIANO_NOTES = [
     {"midi_key": "C2", "t_variation": "piano0", "t_pitch": 1, "t_volume": 1},
