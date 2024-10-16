@@ -234,9 +234,9 @@ def main():
     parser = create_argparse(prog='midi_to_level', description='Generates music in a level by converting notes from a MIDI file into generators and triggers.')
     parser.add_argument('midi', action='store', help='Path to MIDI file (.mid)')
     parser.add_argument('-c', '--compact', action='store_true', help='Removes triggers for notes, which arent used in the MIDI. By default, the tool creates an array of triggers for all of the available notes.')
-    parser.add_argument('-s', '--speed', action='store', type=float, default=1, help='Speed factor which is applied to the MIDI. Defaults to 1.')
-    parser.add_argument('-m', '--mapping', action='store', type=str, default='generic', help=f'Selects the trigger mapping, which is used to map MIDI notes to level triggers. Defaults to \'generic\'. Available mappings: {", ".join(TRIGGER_MAPS.keys())}.')
-    parser.add_argument('-l', '--layout', action='store', type=str, default='', help='Layout in which triggers will be created. In a straight line, in a box, compact etc. WORK IN PROGRESS.')
+    parser.add_argument('-s', '--speed', action='store', type=float, default=1, help='Speed factor which is applied to the MIDI. Defaults to %(default)s.')
+    parser.add_argument('-m', '--mapping', action='store', type=str, default='generic', choices=[TRIGGER_MAPS.keys()], help='Selects the trigger mapping, which is used to map MIDI notes to level triggers. Defaults to %(default)s.')
+    parser.add_argument('-l', '--layout', action='store', type=str, default='straight', choices=['straight', 'box', 'compact'], help='Layout in which triggers will be created. In a straight line, in a box, compact etc. WORK IN PROGRESS.')
     args = parser.parse_args()
 
     level = ''
