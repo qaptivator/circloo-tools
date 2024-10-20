@@ -13,6 +13,7 @@ class Trigger:
     trigger_variant: str # the variant used in the trigger (it should be like it's saed in the level file, not like in game)
     trigger_pitch: int = 1 # the pitch in the trigger
     trigger_volume: int = 1 # the volume in the trigger
+    trigger_position: tuple[float, float] = (0, 0) # the position of the trigger in editor. should not be defined during creation, this is defined during layout execution.
 
 @dataclass
 class Instrument:
@@ -20,6 +21,12 @@ class Instrument:
     instrument_name: str | list[str] = '' # matches the exact instrument name, or an array of names. see INSTRUMENT_MAP in pretty_midi
     instrument_class: str | list[str] = '' # matches the exact instrument class, or an array of classes. see INSTRUMENT_CLASSES in pretty_midi
     is_drum: bool = False # is this instrument a drum?
+
+@dataclass
+class Note:
+    trigger: Trigger # the trigger this note uses
+    start: float # start time of the note
+    end: float # end time of the note (not used)
 
 def sanitize_trigger_map(v: list[Instrument]):
     for instr in v:
@@ -63,6 +70,44 @@ TRIGGER_MAPS = {
         ])
     ])
 }
+
+LAYOUTS = [
+    'simple'
+]
+
+# this is a REALLY janky way of doing this
+# function which turns array of triggers into level positions
+# trigger_map: list[Instrument] - the trigger map used in generation
+# returns: list[Instrument] - the modified trigger map with trigger_position defined. it is not checked anywhere so if something is wrong, you wont know.
+def execute_layout(name, trigger_map, array):
+    if name not in LAYOUTS:
+        return
+    match name:
+        case 'simple':
+            if array.compact:
+                new_trigger_map = []
+                for key in array.trigger_map:
+                    if list_find(array.notes, 'variation', key['t_variation']):
+                        new_trigger_map.append(key)
+                        
+            for index, key in enumerate(new_trigger_map):
+                # if a note doesnt exist and it is compact mode, dont generate it. this code isnt needed but ok, i will remove it later
+                if list_find(array.notes, 'variation', key['t_variation']) or not array.compact:
+                    column = index % array.triggers_per_row
+                    row = math.floor(index / self.triggers_per_row)
+                    pos = (column * array.trigger_padding[0] + array.trigger_offset[0], row * array.trigger_padding[1] + array.trigger_offset[1])
+                    array.trigger_position[key['t_variation']] = pos
+
+                    # regular collectable: ic 'io' {pos[0]} {pos[1]} 1 
+                    # gravity collectable (nothing on the inside): ic 'im' {pos[0]} {pos[1]} 1  90 0
+                    array.level += f'''
+    ic 'im' {pos[0]} {pos[1]} 1  90 0
+    trigger
+    sfx \'{key['t_variation']}\' {key['t_volume']} {key['t_pitch']} -1
+    < {array.last_index}
+        '''
+                    array.last_index += 1
+
 
 PIANO_NOTES = [
     {"midi_key": "C2", "t_variation": "piano0", "t_pitch": 1, "t_volume": 1},
@@ -130,13 +175,14 @@ PIANO_NOTES = [
 
 
 class TriggerArray:
-    def __init__(self, level, midi, trigger_map, compact=False, speed_factor=1):
+    def __init__(self, level, midi, trigger_map: list[Instrument], compact=False, speed_factor=1, layout=''):
         self.level = level
         self.midi = midi
         self.last_index = 0
         self.end_time = midi.get_end_time()
         self.compact = compact
         self.speed_factor = speed_factor
+        self.layout = layout
 
         # keys are the sounds that can be played (eg C#3), notes are the individual sounds that have their delay
         # array of all supported sounds, basically mapping MIDI notes to real triggers
@@ -144,7 +190,7 @@ class TriggerArray:
         # when to wrap the triggers around
         self.triggers_per_row = 10
         # positions of all notes
-        self.trigger_pos = {}
+        self.trigger_position = {}
 
         # padding between triggers
         self.trigger_padding = (100, 100)
@@ -156,67 +202,43 @@ class TriggerArray:
 
         self.extract_notes()
         self.generate_array()
-
-        for note in self.notes:
-            if note['time'] and note['variation']:
-                self.add_sound(note['time'], note['variation'])
-
-    def generate_array(self):
-        new_trigger_map = self.trigger_map
-
-        if self.compact:
-            new_trigger_map = []
-            for key in self.trigger_map:
-                if list_find(self.notes, 'variation', key['t_variation']):
-                    new_trigger_map.append(key)
-                    
-        for index, key in enumerate(new_trigger_map):
-            # if a note doesnt exist and it is compact mode, dont generate it. this code isnt needed but ok, i will remove it later
-            if list_find(self.notes, 'variation', key['t_variation']) or not self.compact:
-                column = index % self.triggers_per_row
-                row = math.floor(index / self.triggers_per_row)
-                pos = (column * self.trigger_padding[0] + self.trigger_offset[0], row * self.trigger_padding[1] + self.trigger_offset[1])
-                self.trigger_pos[key['t_variation']] = pos
-
-                # regular collectable: ic 'io' {pos[0]} {pos[1]} 1 
-                # gravity collectable (nothing on the inside): ic 'im' {pos[0]} {pos[1]} 1  90 0
-                self.level += f'''
-ic 'im' {pos[0]} {pos[1]} 1  90 0
-trigger
-sfx \'{key['t_variation']}\' {key['t_volume']} {key['t_pitch']} -1
-< {self.last_index}
-    '''
-                self.last_index += 1
+        self.generate_notes()
 
     def extract_notes(self):
-        #for instrument in self.midi_data.instruments:
-            # TODO: prompt the user to select an instrument
-        #    for note in instrument.notes:
-        #        pass
-        #instrument = self.midi_data.instruments[0]
         for instrument in self.midi.instruments:
-            for note in instrument.notes:
-                note_name = pretty_midi.note_number_to_name(note.pitch).upper()
-                if note_name:
-                    #piano_note = list_safe_get(self.sounds, note_name)
-                    piano_note = list_find(self.trigger_map, 'midi_key', note_name)
-                    if piano_note and piano_note['t_variation'] and note.start:
-                        self.notes.append({
-                            'variation': piano_note['t_variation'],
-                            'time': note.start,
-                        })
+            map_instrument = None
+            for v in self.trigger_map:
+                if (instrument.name in v.instrument_name or pretty_midi.program_to_instrument_class(instrument.program) in v.instrument_name) and instrument.is_drum in v.is_drum:
+                    map_instrument = v
+                    break
+            if not map_instrument:
+                continue
 
-    def add_sound(self, delay, variation):
-        # Adds a generator (note) with specified delay and sound (paino key)
+            for note in instrument.notes:
+                trigger = list_find(map_instrument.triggers, 'midi_number', note.pitch)
+                if trigger:
+                    self.notes.append(Note(trigger, note.start, note.end))
+                else:
+                    print('skipped trigger')
+
+    def generate_array(self):
+        self.trigger_map = execute_layout(self.layout, self.trigger_map, self)
+
+    def generate_notes(self):
+        for note in self.notes:
+            if note.start and note.trigger:
+                self.add_sound(note)
+
+    def add_sound(self, note: Note):
+        # Adds a generator (note) based on the note object
         # wait in between gen will be set to the midi's length, and the initial delay will be negative
         # tmc <x> <y> <radius> <density> <dissapear after * 60> <wait in between gen * 60> <initial delay * 60>
 
-        delay /= self.speed_factor
-
+        delay = note.start / self.speed_factor
         radius = 15
         dissapear_after = 0.05
 
-        pos = list_safe_get(self.trigger_pos, variation)
+        pos = note.trigger.trigger_position
         if pos:
             self.level += f'''
 tmc {pos[0]} {pos[1]} {radius} 0 {dissapear_after * 60} {self.end_time * 60} {-(self.end_time - delay) * 60}
@@ -225,7 +247,7 @@ noanim
 '''
             self.last_index += 1
         else:
-            print(f'Key for variation \'{variation}\' does not exist, skipping adding sound')
+            print(f'Trigger \'{note.trigger.trigger_variation}\' doesnt have position defined in it, skipping adding sound')
 
     def get_level(self):
         return self.level
@@ -256,7 +278,7 @@ def main():
         print(f'Trigger mapping \'{args.mapping}\' doesnt exist')
         return
 
-    trigger_array = TriggerArray(level, midi, trigger_map, args.compact, args.speed)
+    trigger_array = TriggerArray(level, midi, trigger_map, args.compact, args.speed, args.layout)
     level_text = trigger_array.get_level()
 
     save_level(level_text, args)
