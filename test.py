@@ -65,32 +65,10 @@ PIANO_NOTES = [
     {"midi_key": "C7", "t_variation": "piano60", "t_pitch": 1, "t_volume": 1},
 ]
 
-def note_name_to_number(note_name):
-    # Map note name to the semitone
-    pitch_map = {'C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11}
-    # Relative change in semitone denoted by each accidental
-    acc_map = {'#': 1, '': 0, 'b': -1, '!': -1}
-
-    # Reg exp will raise an error when the note name is not valid
-    try:
-        # Extract pitch, octave, and accidental from the supplied note name
-        match = re.match(r'^(?P<n>[A-Ga-g])(?P<off>[#b!]?)(?P<oct>[+-]?\d+)$',
-                         note_name)
-
-        pitch = match.group('n').upper()
-        offset = acc_map[match.group('off')]
-        octave = int(match.group('oct'))
-    except:
-        raise ValueError('Improper note format: {}'.format(note_name))
-
-    # Convert from the extrated ints to a full note number
-    return 12*(octave + 1) + pitch_map[pitch] + offset
-
-result = []
-
+result = ''
 
 for note in PIANO_NOTES:
-    result.append({
-
-    })
-note_name_to_number()
+    result += f'''
+Trigger(midi_number=\'{note['midi_key']}\', trigger_variant=\'{note['t_variation']}\'),'''
+    
+open('script_output.txt', 'w').write(result)

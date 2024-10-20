@@ -62,92 +62,88 @@ def sanitize_trigger_map(v: list[Instrument]):
                     stop_exec = True
 
             trigger.midi_number = midi_number
+    return v
 
 TRIGGER_MAPS = {
     'generic': sanitize_trigger_map([
-        Instrument(instrument_class='Piano', triggers=[
+        Instrument(instrument_class='Piano', triggers=[    
             Trigger(midi_number='C2', trigger_variant='piano0'),
+            Trigger(midi_number='C#2', trigger_variant='piano1'),
+            Trigger(midi_number='D2', trigger_variant='piano2'),
+            Trigger(midi_number='D#2', trigger_variant='piano3'),
+            Trigger(midi_number='E2', trigger_variant='piano4'),
+            Trigger(midi_number='F2', trigger_variant='piano5'),
+            Trigger(midi_number='F#2', trigger_variant='piano6'),
+            Trigger(midi_number='G2', trigger_variant='piano7'),
+            Trigger(midi_number='G#2', trigger_variant='piano8'),
+            Trigger(midi_number='A2', trigger_variant='piano9'),
+            Trigger(midi_number='A#2', trigger_variant='piano10'),
+            Trigger(midi_number='B2', trigger_variant='piano11'),
+            Trigger(midi_number='C3', trigger_variant='piano12'),
+            Trigger(midi_number='C#3', trigger_variant='piano13'),
+            Trigger(midi_number='D3', trigger_variant='piano14'),
+            Trigger(midi_number='D#3', trigger_variant='piano15'),
+            Trigger(midi_number='E3', trigger_variant='piano16'),
+            Trigger(midi_number='F3', trigger_variant='piano17'),
+            Trigger(midi_number='F#3', trigger_variant='piano18'),
+            Trigger(midi_number='G3', trigger_variant='piano19'),
+            Trigger(midi_number='G#3', trigger_variant='piano20'),
+            Trigger(midi_number='A3', trigger_variant='piano21'),
+            Trigger(midi_number='A#3', trigger_variant='piano22'),
+            Trigger(midi_number='B3', trigger_variant='piano23'),
+            Trigger(midi_number='C4', trigger_variant='piano24'),
+            Trigger(midi_number='C#4', trigger_variant='piano25'),
+            Trigger(midi_number='D4', trigger_variant='piano26'),
+            Trigger(midi_number='D#4', trigger_variant='piano27'),
+            Trigger(midi_number='E4', trigger_variant='piano28'),
+            Trigger(midi_number='F4', trigger_variant='piano29'),
+            Trigger(midi_number='F#4', trigger_variant='piano30'),
+            Trigger(midi_number='G4', trigger_variant='piano31'),
+            Trigger(midi_number='G#4', trigger_variant='piano32'),
+            Trigger(midi_number='A4', trigger_variant='piano33'),
+            Trigger(midi_number='A#4', trigger_variant='piano34'),
+            Trigger(midi_number='B4', trigger_variant='piano35'),
+            Trigger(midi_number='C5', trigger_variant='piano36'),
+            Trigger(midi_number='C#5', trigger_variant='piano37'),
+            Trigger(midi_number='D5', trigger_variant='piano38'),
+            Trigger(midi_number='D#5', trigger_variant='piano39'),
+            Trigger(midi_number='E5', trigger_variant='piano40'),
+            Trigger(midi_number='F5', trigger_variant='piano41'),
+            Trigger(midi_number='F#5', trigger_variant='piano42'),
+            Trigger(midi_number='G5', trigger_variant='piano43'),
+            Trigger(midi_number='G#5', trigger_variant='piano44'),
+            Trigger(midi_number='A5', trigger_variant='piano45'),
+            Trigger(midi_number='A#5', trigger_variant='piano46'),
+            Trigger(midi_number='B5', trigger_variant='piano47'),
+            Trigger(midi_number='C6', trigger_variant='piano48'),
+            Trigger(midi_number='C#6', trigger_variant='piano49'),
+            Trigger(midi_number='D6', trigger_variant='piano50'),
+            Trigger(midi_number='D#6', trigger_variant='piano51'),
+            Trigger(midi_number='E6', trigger_variant='piano52'),
+            Trigger(midi_number='F6', trigger_variant='piano53'),
+            Trigger(midi_number='F#6', trigger_variant='piano54'),
+            Trigger(midi_number='G6', trigger_variant='piano55'),
+            Trigger(midi_number='G#6', trigger_variant='piano56'),
+            Trigger(midi_number='A6', trigger_variant='piano57'),
+            Trigger(midi_number='A#6', trigger_variant='piano58'),
+            Trigger(midi_number='B6', trigger_variant='piano59'),
+            Trigger(midi_number='C7', trigger_variant='piano60'),
         ])
     ])
 }
 
 LAYOUTS = [
-    'simple'
+    'simple',
+    'simple_trimmed',
+    'compact_trimmed'
 ]
-
-
-PIANO_NOTES = [
-    {"midi_key": "C2", "t_variation": "piano0", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "C#2", "t_variation": "piano1", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "D2", "t_variation": "piano2", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "D#2", "t_variation": "piano3", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "E2", "t_variation": "piano4", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "F2", "t_variation": "piano5", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "F#2", "t_variation": "piano6", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "G2", "t_variation": "piano7", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "G#2", "t_variation": "piano8", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "A2", "t_variation": "piano9", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "A#2", "t_variation": "piano10", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "B2", "t_variation": "piano11", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "C3", "t_variation": "piano12", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "C#3", "t_variation": "piano13", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "D3", "t_variation": "piano14", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "D#3", "t_variation": "piano15", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "E3", "t_variation": "piano16", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "F3", "t_variation": "piano17", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "F#3", "t_variation": "piano18", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "G3", "t_variation": "piano19", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "G#3", "t_variation": "piano20", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "A3", "t_variation": "piano21", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "A#3", "t_variation": "piano22", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "B3", "t_variation": "piano23", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "C4", "t_variation": "piano24", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "C#4", "t_variation": "piano25", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "D4", "t_variation": "piano26", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "D#4", "t_variation": "piano27", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "E4", "t_variation": "piano28", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "F4", "t_variation": "piano29", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "F#4", "t_variation": "piano30", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "G4", "t_variation": "piano31", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "G#4", "t_variation": "piano32", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "A4", "t_variation": "piano33", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "A#4", "t_variation": "piano34", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "B4", "t_variation": "piano35", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "C5", "t_variation": "piano36", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "C#5", "t_variation": "piano37", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "D5", "t_variation": "piano38", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "D#5", "t_variation": "piano39", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "E5", "t_variation": "piano40", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "F5", "t_variation": "piano41", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "F#5", "t_variation": "piano42", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "G5", "t_variation": "piano43", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "G#5", "t_variation": "piano44", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "A5", "t_variation": "piano45", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "A#5", "t_variation": "piano46", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "B5", "t_variation": "piano47", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "C6", "t_variation": "piano48", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "C#6", "t_variation": "piano49", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "D6", "t_variation": "piano50", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "D#6", "t_variation": "piano51", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "E6", "t_variation": "piano52", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "F6", "t_variation": "piano53", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "F#6", "t_variation": "piano54", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "G6", "t_variation": "piano55", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "G#6", "t_variation": "piano56", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "A6", "t_variation": "piano57", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "A#6", "t_variation": "piano58", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "B6", "t_variation": "piano59", "t_pitch": 1, "t_volume": 1},
-    {"midi_key": "C7", "t_variation": "piano60", "t_pitch": 1, "t_volume": 1},
-]
-
 
 class TriggerArray:
-    def __init__(self, level, midi, trigger_map: list[Instrument], compact=False, speed_factor=1, layout=''):
+    def __init__(self, level, midi, trigger_map: list[Instrument], speed_factor=1, layout=''):
         self.level = level
         self.midi = midi
         self.last_index = 0
         self.end_time = midi.get_end_time()
-        self.compact = compact
         self.speed_factor = speed_factor
         self.layout = layout
 
@@ -170,18 +166,17 @@ class TriggerArray:
         for instrument in self.midi.instruments:
             map_instrument = None
             for v in self.trigger_map:
-                if (instrument.name in v.instrument_name or pretty_midi.program_to_instrument_class(instrument.program) in v.instrument_name) and instrument.is_drum in v.is_drum:
+                if (instrument.name in v.instrument_name or pretty_midi.program_to_instrument_class(instrument.program) in v.instrument_class) and instrument.is_drum == v.is_drum:
                     map_instrument = v
                     break
             if not map_instrument:
                 continue
 
             for note in instrument.notes:
-                trigger = list_find(map_instrument.triggers, 'midi_number', note.pitch)
-                if trigger:
-                    self.notes.append(Note(trigger, note.start, note.end))
-                else:
-                    print('skipped trigger')
+                for trigger in map_instrument.triggers:
+                    if trigger.midi_number == note.pitch:
+                        self.notes.append(Note(trigger, note.start, note.end))
+                        break
 
     def generate_notes(self):
         for note in self.notes:
@@ -202,8 +197,7 @@ class TriggerArray:
             self.level += f'''
 tmc {pos[0]} {pos[1]} {radius} 0 {dissapear_after * 60} {self.end_time * 60} {-(self.end_time - delay) * 60}
 noanim
-< {self.last_index}
-'''
+< {self.last_index}'''
             self.last_index += 1
         else:
             print(f'Trigger \'{note.trigger.trigger_variation}\' doesnt have position defined in it, skipping adding sound')
@@ -233,11 +227,10 @@ noanim
                                         trigger.trigger_position = pos
 
                                         self.level += f'''
-            ic 'im' {pos[0]} {pos[1]} 1  90 0
-            trigger
-            sfx \'{trigger.trigger_variant}\' {trigger.trigger_volume} {trigger.trigger_pitch} -1
-            < {self.last_index}
-            '''
+ic 'im' {pos[0]} {pos[1]} 1  90 0
+trigger
+sfx \'{trigger.trigger_variant}\' {trigger.trigger_volume} {trigger.trigger_pitch} -1
+< {self.last_index}'''
                                         self.last_index += 1
 
         def compact():
@@ -257,12 +250,11 @@ noanim
                 simple((10, 10), (1050, 1050))
         
 def main():
-    parser = create_argparse(prog='midi_to_level', description='Generates music in a level by converting notes from a MIDI file into generators and triggers.')
+    parser = create_argparse(prog='midi_to_level', description='Generates music in a level by converting notes from a MIDI file into generators and triggers. PS \'trimmed\' in a layout means that notes (triggers) not used in the song would not get created, aka they get trimmed.')
     parser.add_argument('midi', action='store', help='Path to MIDI file (.mid)')
-    parser.add_argument('-c', '--compact', action='store_true', help='Removes triggers for notes, which arent used in the MIDI. By default, the tool creates an array of triggers for all of the available notes.')
     parser.add_argument('-s', '--speed', action='store', type=float, default=1, help='Speed factor which is applied to the MIDI. Defaults to %(default)s.')
-    parser.add_argument('-m', '--mapping', action='store', type=str, default='generic', choices=[TRIGGER_MAPS.keys()], help='Selects the trigger mapping, which is used to map MIDI notes to level triggers. Defaults to %(default)s.')
-    parser.add_argument('-l', '--layout', action='store', type=str, default='straight', choices=['straight', 'box', 'compact'], help='Layout in which triggers will be created. In a straight line, in a box, compact etc. WORK IN PROGRESS.')
+    parser.add_argument('-m', '--mapping', action='store', type=str, default='generic', choices=TRIGGER_MAPS.keys(), help='Selects the trigger mapping, which is used to map MIDI notes to level triggers. Defaults to %(default)s.')
+    parser.add_argument('-l', '--layout', action='store', type=str, default='simple', choices=LAYOUTS, help='Layout in which triggers will be created and arranged. Defaults to %(default)s.')
     args = parser.parse_args()
 
     level = ''
@@ -282,7 +274,7 @@ def main():
         print(f'Trigger mapping \'{args.mapping}\' doesnt exist')
         return
 
-    trigger_array = TriggerArray(level, midi, trigger_map, args.compact, args.speed, args.layout)
+    trigger_array = TriggerArray(level, midi, trigger_map, args.speed, args.layout)
     level_text = trigger_array.get_level()
 
     save_level(level_text, args)
