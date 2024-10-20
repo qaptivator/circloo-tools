@@ -132,11 +132,17 @@ TRIGGER_MAPS = {
     ])
 }
 
-LAYOUTS = [
-    'simple',
-    'simple_trimmed',
-    'compact_trimmed'
-]
+LAYOUTS = {
+    'simple': {
+        'note_radius': 15,
+    },
+    'simple_trimmed': {
+        'note_radius': 15,
+    },
+    'compact_trimmed': {
+        'note_radius': 2,
+    },
+}
 
 class TriggerArray:
     def __init__(self, level, midi, trigger_map: list[Instrument], speed_factor=1, layout=''):
@@ -189,7 +195,7 @@ class TriggerArray:
         # tmc <x> <y> <radius> <density> <dissapear after * 60> <wait in between gen * 60> <initial delay * 60>
 
         delay = note.start / self.speed_factor
-        radius = 15
+        radius = self.layout['note_radius']
         dissapear_after = 0.05
 
         pos = note.trigger.trigger_position
@@ -208,9 +214,10 @@ noanim
     # this is a REALLY janky way of doing this
     def generate_array(self):
         def trim():
-            used_triggers = set()
+            used_triggers = []
             for note in self.notes:
-                used_triggers.add(note.trigger)
+                if note.trigger not in used_triggers:
+                    used_triggers.append(note.trigger)
 
             for instrument in self.trigger_map:
                 for trigger in instrument.triggers:
@@ -219,27 +226,21 @@ noanim
 
         def simple(trigger_padding, trigger_offset):
             for instrument in self.trigger_map:
-                                for index, trigger in enumerate(instrument.triggers):
-                                    if trigger.trigger_variant:
-                                        column = index % self.triggers_per_row
-                                        row = math.floor(index / self.triggers_per_row)
-                                        pos = (column * trigger_padding[0] + trigger_offset[0], row * trigger_padding[1] + trigger_offset[1])
-                                        trigger.trigger_position = pos
+                for index, trigger in enumerate(instrument.triggers):
+                    if trigger.trigger_variant:
+                        column = index % self.triggers_per_row
+                        row = math.floor(index / self.triggers_per_row)
+                        pos = (column * trigger_padding[0] + trigger_offset[0], row * trigger_padding[1] + trigger_offset[1])
+                        trigger.trigger_position = pos
 
-                                        self.level += f'''
+                        self.level += f'''
 ic 'io' {pos[0]} {pos[1]} 1
 trigger
 sfx \'{trigger.trigger_variant}\' {trigger.trigger_volume} {trigger.trigger_pitch} -1
 < {self.last_index}'''
-                                        self.last_index += 1
+                        self.last_index += 1
 
-        def compact():
-            pass
-
-                                        
-        if self.layout not in LAYOUTS:
-            return
-        match self.layout:
+        match self.layout['name']:
             case 'simple':
                 simple((100, 100), (1050, 1050))
             case 'simple_trimmed':
@@ -247,14 +248,14 @@ sfx \'{trigger.trigger_variant}\' {trigger.trigger_volume} {trigger.trigger_pitc
                 simple((100, 100), (1050, 1050))
             case 'compact_trimmed':
                 trim()
-                simple((10, 10), (1050, 1050))
+                simple((30, 30), (1050, 1050))
         
 def main():
     parser = create_argparse(prog='midi_to_level', description='Generates music in a level by converting notes from a MIDI file into generators and triggers. PS \'trimmed\' in a layout means that notes (triggers) not used in the song would not get created, aka they get trimmed.')
     parser.add_argument('midi', action='store', help='Path to MIDI file (.mid)')
     parser.add_argument('-s', '--speed', action='store', type=float, default=1, help='Speed factor which is applied to the MIDI. Defaults to %(default)s.')
     parser.add_argument('-m', '--mapping', action='store', type=str, default='generic', choices=TRIGGER_MAPS.keys(), help='Selects the trigger mapping, which is used to map MIDI notes to level triggers. Defaults to %(default)s.')
-    parser.add_argument('-l', '--layout', action='store', type=str, default='simple', choices=LAYOUTS, help='Layout in which triggers will be created and arranged. Defaults to %(default)s.')
+    parser.add_argument('-l', '--layout', action='store', type=str, default='simple', choices=LAYOUTS.keys(), help='Layout in which triggers will be created and arranged. Defaults to %(default)s.')
     args = parser.parse_args()
 
     level = ''
@@ -274,7 +275,13 @@ def main():
         print(f'Trigger mapping \'{args.mapping}\' doesnt exist')
         return
 
-    trigger_array = TriggerArray(level, midi, trigger_map, args.speed, args.layout)
+    layout = LAYOUTS.get(args.layout)
+    if not layout:
+        print(f'Layout \'{args.layout}\' doesnt exist')
+        return
+    layout['name'] = args.layout
+
+    trigger_array = TriggerArray(level, midi, trigger_map, args.speed, layout)
     level_text = trigger_array.get_level()
 
     save_level(level_text, args)
