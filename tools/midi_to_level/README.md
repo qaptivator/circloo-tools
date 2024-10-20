@@ -5,8 +5,9 @@ Play music in a level by converting notes from a MIDI file into generators and t
 TODO:
 
 - [x] document cli arguments
-- [ ] add customizable layouts (eg straight, square, compact), which will ucstomize the arrangement and padding of triggers
-- [ ] remove compact entirely, make it embedded into layouts
+- [x] add customizable layouts (eg straight, square, compact), which will ucstomize the arrangement and padding of triggers
+- [x] remove compact entirely, make it embedded into layouts
+- [ ] fix "trimmed" layouts not working correctly (they dont trim at all)
 
 Usage: `python -u -m src.midi_to_level`
 It will ask for the midi file input (.mid)
