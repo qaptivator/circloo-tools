@@ -227,7 +227,7 @@ noanim
                                         trigger.trigger_position = pos
 
                                         self.level += f'''
-ic 'im' {pos[0]} {pos[1]} 1  90 0
+ic 'io' {pos[0]} {pos[1]} 1
 trigger
 sfx \'{trigger.trigger_variant}\' {trigger.trigger_volume} {trigger.trigger_pitch} -1
 < {self.last_index}'''
