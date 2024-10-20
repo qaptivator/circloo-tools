@@ -75,39 +75,6 @@ LAYOUTS = [
     'simple'
 ]
 
-# this is a REALLY janky way of doing this
-# function which turns array of triggers into level positions
-# trigger_map: list[Instrument] - the trigger map used in generation
-# returns: list[Instrument] - the modified trigger map with trigger_position defined. it is not checked anywhere so if something is wrong, you wont know.
-def execute_layout(name, trigger_map, array):
-    if name not in LAYOUTS:
-        return
-    match name:
-        case 'simple':
-            if array.compact:
-                new_trigger_map = []
-                for key in array.trigger_map:
-                    if list_find(array.notes, 'variation', key['t_variation']):
-                        new_trigger_map.append(key)
-                        
-            for index, key in enumerate(new_trigger_map):
-                # if a note doesnt exist and it is compact mode, dont generate it. this code isnt needed but ok, i will remove it later
-                if list_find(array.notes, 'variation', key['t_variation']) or not array.compact:
-                    column = index % array.triggers_per_row
-                    row = math.floor(index / self.triggers_per_row)
-                    pos = (column * array.trigger_padding[0] + array.trigger_offset[0], row * array.trigger_padding[1] + array.trigger_offset[1])
-                    array.trigger_position[key['t_variation']] = pos
-
-                    # regular collectable: ic 'io' {pos[0]} {pos[1]} 1 
-                    # gravity collectable (nothing on the inside): ic 'im' {pos[0]} {pos[1]} 1  90 0
-                    array.level += f'''
-    ic 'im' {pos[0]} {pos[1]} 1  90 0
-    trigger
-    sfx \'{key['t_variation']}\' {key['t_volume']} {key['t_pitch']} -1
-    < {array.last_index}
-        '''
-                    array.last_index += 1
-
 
 PIANO_NOTES = [
     {"midi_key": "C2", "t_variation": "piano0", "t_pitch": 1, "t_volume": 1},
@@ -192,11 +159,6 @@ class TriggerArray:
         # positions of all notes
         self.trigger_position = {}
 
-        # padding between triggers
-        self.trigger_padding = (100, 100)
-        # offset from the top left corner of the level
-        self.trigger_offset = (1050, 1050)
-
         # notes extracted from the midi
         self.notes = []
 
@@ -220,9 +182,6 @@ class TriggerArray:
                     self.notes.append(Note(trigger, note.start, note.end))
                 else:
                     print('skipped trigger')
-
-    def generate_array(self):
-        self.trigger_map = execute_layout(self.layout, self.trigger_map, self)
 
     def generate_notes(self):
         for note in self.notes:
@@ -251,6 +210,51 @@ noanim
 
     def get_level(self):
         return self.level
+    
+    # this is a REALLY janky way of doing this
+    def generate_array(self):
+        def trim():
+            used_triggers = set()
+            for note in self.notes:
+                used_triggers.add(note.trigger)
+
+            for instrument in self.trigger_map:
+                for trigger in instrument.triggers:
+                    if trigger not in used_triggers:
+                        instrument.triggers.remove(trigger)
+
+        def simple(trigger_padding, trigger_offset):
+            for instrument in self.trigger_map:
+                                for index, trigger in enumerate(instrument.triggers):
+                                    if trigger.trigger_variant:
+                                        column = index % self.triggers_per_row
+                                        row = math.floor(index / self.triggers_per_row)
+                                        pos = (column * trigger_padding[0] + trigger_offset[0], row * trigger_padding[1] + trigger_offset[1])
+                                        trigger.trigger_position = pos
+
+                                        self.level += f'''
+            ic 'im' {pos[0]} {pos[1]} 1  90 0
+            trigger
+            sfx \'{trigger.trigger_variant}\' {trigger.trigger_volume} {trigger.trigger_pitch} -1
+            < {self.last_index}
+            '''
+                                        self.last_index += 1
+
+        def compact():
+            pass
+
+                                        
+        if self.layout not in LAYOUTS:
+            return
+        match self.layout:
+            case 'simple':
+                simple((100, 100), (1050, 1050))
+            case 'simple_trimmed':
+                trim()
+                simple((100, 100), (1050, 1050))
+            case 'compact_trimmed':
+                trim()
+                simple((10, 10), (1050, 1050))
         
 def main():
     parser = create_argparse(prog='midi_to_level', description='Generates music in a level by converting notes from a MIDI file into generators and triggers.')
