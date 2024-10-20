@@ -65,7 +65,7 @@ def sanitize_trigger_map(v: list[Instrument]):
     return v
 
 TRIGGER_MAPS = {
-    'generic': sanitize_trigger_map([
+    'piano': sanitize_trigger_map([
         Instrument(instrument_class='Piano', triggers=[    
             Trigger(midi_number='C2', trigger_variant='piano0'),
             Trigger(midi_number='C#2', trigger_variant='piano1'),
@@ -129,8 +129,14 @@ TRIGGER_MAPS = {
             Trigger(midi_number='B6', trigger_variant='piano59'),
             Trigger(midi_number='C7', trigger_variant='piano60'),
         ])
-    ])
+    ]),
+    'percussion': sanitize_trigger_map([
+        Instrument(instrument_class='Chromatic Percussion', triggers=[    
+            Trigger(midi_number='C2', trigger_variant='piano0'),
+        ])
+    ]),
 }
+TRIGGER_MAPS['generic'] = TRIGGER_MAPS['piano'] + TRIGGER_MAPS['percussion']
 
 LAYOUTS = {
     'simple': {

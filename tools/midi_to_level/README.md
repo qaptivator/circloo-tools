@@ -11,4 +11,4 @@ TODO:
 Usage: `python -u -m src.midi_to_level`
 It will ask for the midi file input (.mid)
 
-Credits to [thisaccountdoesnotexist](https://onlinesequencer.net/members/48437) for example Megalovania no bass midi from [Online Sequencer](https://onlinesequencer.net/1760062)
+Credits to these people from [Online Sequencer](https://onlinesequencer.net/1760062) for the great midi songs i used while testing and showing off the tool: [thisaccountdoesnotexist](https://onlinesequencer.net/members/48437), [UT Composer](https://onlinesequencer.net/members/14333), [FlyingBacon](https://onlinesequencer.net/members/17926)
